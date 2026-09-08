@@ -1,0 +1,83 @@
+.card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(15px);
+  border-radius: 22px;
+  padding: 25px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  transition: all .35s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 40px rgba(34,139,34,.22);
+}
+
+.card h2 {
+  color: #1f8f3a;
+  margin-bottom: 20px;
+}
+
+.big-number {
+  font-size: 42px;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+}
+
+.card-details p {
+  margin: 8px 0;
+  color: #666;
+}
+.card button {
+  margin-top: 18px;
+  padding: 10px 18px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.card button:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+.card a {
+  text-decoration: none;
+}
+.card-link{
+    text-decoration:none;
+    color:inherit;
+    display:block;
+}
+.card{
+    cursor:pointer;
+    transition:0.3s;
+}
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+.weather-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weather-card .big-number {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 12px 0;
+}
+
+.weather-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 500;
+}

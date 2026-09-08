@@ -1,0 +1,88 @@
+.crop-page {
+  min-height: 100vh;
+  padding: 180px 60px 60px;
+  background: linear-gradient(135deg, #f0fff4, #dbeafe);
+  text-align: center;
+}
+
+.crop-page h1 {
+  font-size: 42px;
+  color: #166534;
+  margin-bottom: 15px;
+}
+
+.crop-page p {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.crop-grid {
+  max-width: 1100px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+}
+
+.crop-card,
+.result-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  transition: 0.3s ease;
+}
+
+.crop-card:hover,
+.result-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+}
+
+.crop-card h2 {
+  color: #166534;
+  margin-bottom: 15px;
+}
+
+.crop-card h3 {
+  font-size: 28px;
+  color: #222;
+}
+
+.result-card {
+  max-width: 700px;
+  margin: 45px auto;
+}
+
+.result-card h2 {
+  color: #166534;
+  margin-bottom: 15px;
+}
+
+.result-card h1 {
+  font-size: 42px;
+  margin: 20px 0;
+}
+
+.result-card h3 {
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.result-card button {
+  padding: 14px 30px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.result-card button:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
