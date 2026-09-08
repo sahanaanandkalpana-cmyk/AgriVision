@@ -41,6 +41,9 @@ Create `backend/.env` with your MongoDB connection string:
 ```env
 MONGO_URI=your_mongodb_connection_string
 PORT=5000
+OPENWEATHER_API_KEY=your_openweather_api_key
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 Then run:
@@ -52,6 +55,8 @@ npm start
 ```
 
 The API runs on port `5000` by default.
+
+The AI Assistant uses the OpenAI API from the backend. Keep `OPENAI_API_KEY` in `backend/.env`; never expose it in frontend code or commit it to Git.
 
 ## API Routes
 

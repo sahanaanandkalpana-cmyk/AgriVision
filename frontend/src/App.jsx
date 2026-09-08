@@ -46,7 +46,14 @@ function App() {
       <Route path="/crop-recommendation" element={<CropRecommendation />} />
       <Route path="/drone-monitoring" element={<DroneMonitoring />} />
       <Route path="/profit-estimation" element={<ProfitEstimation />} />
-      <Route path="/ai-assistant" element={<AIAssistant />} />
+      <Route
+        path="/ai-assistant"
+        element={
+          <ProtectedRoute>
+            <AIAssistant />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/features" element={<Features />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/about" element={<About />} />

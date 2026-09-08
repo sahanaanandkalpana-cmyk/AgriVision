@@ -3,33 +3,55 @@ import Navbar from "../components/Navbar";
 import "../styles/AIAssistant.css";
 
 function AIAssistant() {
+  const [form, setForm] = useState({
+    crop: "",
+    disease: "",
+    problem: "",
+    location: "",
+  });
+  const [answer, setAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState(
-    "Hello! 👋 I'm AgriVision AI. Ask me anything about farming."
-  );
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((currentForm) => ({ ...currentForm, [name]: value }));
+  };
 
-  const responses = [
-    "🌾 Rice grows best in fertile clay soil with proper irrigation.",
-    "💧 Irrigate your crops early in the morning to reduce water loss.",
-    "🌱 Use organic compost to improve soil fertility.",
-    "🦠 Remove infected leaves immediately to prevent disease spread.",
-    "☀️ Ensure crops receive enough sunlight for healthy growth.",
-    "🐛 Neem oil is an effective natural pesticide for many crop pests."
-  ];
+  const askAI = async (event) => {
+    event.preventDefault();
 
-  const askAI = () => {
-
-    if (question.trim() === "") {
-      alert("Please enter a question!");
+    if (!form.problem.trim()) {
+      setError("Describe the crop problem so the assistant can help.");
       return;
     }
 
-    const random =
-      responses[Math.floor(Math.random() * responses.length)];
+    setLoading(true);
+    setError("");
 
-    setAnswer(random);
-    setQuestion("");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/assistant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to get AI advice");
+      }
+
+      setAnswer(data.answer);
+    } catch (requestError) {
+      setAnswer("");
+      setError(requestError.message || "Unable to reach the AI Assistant");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,31 +62,67 @@ function AIAssistant() {
 
         <h1>🤖 AgriVision AI Assistant</h1>
 
-        <p>
-          Ask any farming-related question and receive AI guidance.
-        </p>
+        <p>Tell the assistant what is happening in your crop for practical guidance.</p>
 
-        <div className="chat-box">
+        <form className="chat-box" onSubmit={askAI}>
+          <div className="assistant-fields">
+            <label>
+              Crop
+              <input
+                name="crop"
+                value={form.crop}
+                onChange={handleChange}
+                placeholder="e.g. tomato, rice, maize"
+              />
+            </label>
 
-          <textarea
-            placeholder="Ask your farming question..."
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-          />
+            <label>
+              Suspected disease or pest
+              <input
+                name="disease"
+                value={form.disease}
+                onChange={handleChange}
+                placeholder="e.g. leaf spot, aphids, unknown"
+              />
+            </label>
 
-          <button onClick={askAI}>
-            Send
+            <label>
+              Location
+              <input
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="e.g. Vellore"
+              />
+            </label>
+          </div>
+
+          <label>
+            What problem are you seeing? <span className="required-mark">*</span>
+            <textarea
+              name="problem"
+              placeholder="Describe the symptoms, when they started, and how the crop is affected..."
+              value={form.problem}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Thinking..." : "Get farming advice"}
           </button>
+          {error && <p className="assistant-error">{error}</p>}
+        </form>
 
-        </div>
-
-        <div className="response-box">
-
-          <h2>🤖 AI Response</h2>
-
-          <p>{answer}</p>
-
-        </div>
+        {answer && (
+          <div className="response-box">
+            <h2>🤖 AgriVision AI Advice</h2>
+            <p className="assistant-answer">{answer}</p>
+            <p className="assistant-note">
+              AI guidance is informational. Confirm disease identification and treatment with a local agriculture expert.
+            </p>
+          </div>
+        )}
 
       </div>
     </>

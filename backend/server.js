@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const weatherRoutes = require("./routes/weatherRoutes");
 const farmRoutes = require("./routes/farmRoutes");
+const assistantRoutes = require("./routes/assistantRoutes");
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/farms", farmRoutes);
+app.use("/api/assistant", assistantRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
