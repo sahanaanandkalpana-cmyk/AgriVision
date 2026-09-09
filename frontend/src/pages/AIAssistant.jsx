@@ -39,13 +39,44 @@ function AIAssistant() {
         },
         body: JSON.stringify(form),
       });
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.message || "Unable to get AI advice");
       }
 
-      setAnswer(data.answer);
+      if (!response.body) {
+        throw new Error("The AI service did not return a readable response.");
+      }
+
+      setAnswer("");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+
+        const events = buffer.split("\n\n");
+        buffer = events.pop() || "";
+
+        for (const eventChunk of events) {
+          const dataLine = eventChunk
+            .split("\n")
+            .find((line) => line.startsWith("data: "));
+
+          if (!dataLine) continue;
+          const payload = dataLine.slice(6).trim();
+          if (payload === "[DONE]") continue;
+
+          const { delta } = JSON.parse(payload);
+          if (delta) {
+            setAnswer((currentAnswer) => currentAnswer + delta);
+          }
+        }
+
+        if (done) break;
+      }
     } catch (requestError) {
       setAnswer("");
       setError(requestError.message || "Unable to reach the AI Assistant");
@@ -114,10 +145,10 @@ function AIAssistant() {
           {error && <p className="assistant-error">{error}</p>}
         </form>
 
-        {answer && (
-          <div className="response-box">
-            <h2>🤖 AgriVision AI Advice</h2>
-            <p className="assistant-answer">{answer}</p>
+        {(answer || loading) && (
+          <div className={`response-box${loading ? " is-streaming" : ""}`}>
+            <h2>{loading ? "🤖 AgriVision AI is responding..." : "🤖 AgriVision AI Advice"}</h2>
+            <p className="assistant-answer">{answer || "Receiving live guidance..."}</p>
             <p className="assistant-note">
               AI guidance is informational. Confirm disease identification and treatment with a local agriculture expert.
             </p>

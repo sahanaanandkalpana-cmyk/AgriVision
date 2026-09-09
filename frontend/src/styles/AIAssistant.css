@@ -90,6 +90,10 @@
   text-align: left;
 }
 
+.response-box.is-streaming {
+  border-left: 4px solid #16a34a;
+}
+
 .response-box h2 {
   color: #166534;
   margin-bottom: 20px;
@@ -119,6 +123,7 @@
 
 .assistant-answer {
   white-space: pre-wrap;
+  min-height: 28px;
 }
 
 .assistant-note {
