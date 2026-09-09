@@ -1,139 +1,93 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/DiseaseDetection.css";
 import Navbar from "../components/Navbar";
 
 function DiseaseDetection() {
   const [image, setImage] = useState(null);
-  const [disease, setDisease] = useState("Not Detected");
-const [confidence, setConfidence] = useState("--");
-const [medicine, setMedicine] = useState("--");
-const [recommendation, setRecommendation] = useState(
-  "Upload a crop image first."
-);
-const [loading, setLoading] = useState(false);
+  const [imageData, setImageData] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-const handleImageChange = (event) => {
-  const file = event.target.files[0];
+  useEffect(() => () => image && URL.revokeObjectURL(image), [image]);
 
-  if (file) {
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
     setImage(URL.createObjectURL(file));
-  }
-};
-const diseaseData = [
-  {
-    disease: "Tomato Early Blight",
-    confidence: "96%",
-    medicine: "Mancozeb 75% WP",
-    recommendation:
-      "Spray Mancozeb every 7 days and remove infected leaves."
-  },
-  {
-    disease: "Rice Leaf Blast",
-    confidence: "94%",
-    medicine: "Tricyclazole",
-    recommendation:
-      "Maintain proper water level and spray Tricyclazole."
-  },
-  {
-    disease: "Potato Late Blight",
-    confidence: "95%",
-    medicine: "Metalaxyl",
-    recommendation:
-      "Remove infected leaves and spray Metalaxyl."
-  },
-  {
-    disease: "Corn Rust",
-    confidence: "93%",
-    medicine: "Propiconazole",
-    recommendation:
-      "Apply Propiconazole and monitor the crop regularly."
-  },
-  {
-    disease: "Cucumber Mosaic Virus",
-    confidence: "91%",
-    medicine: "Neem Oil Spray",
-    recommendation:
-      "Control aphids and remove infected plants."
-  }
-];
-const handleDetectDisease = () => {
-  if (!image) {
-    alert("Please upload an image first!");
-    return;
-  }
+    setResult(null);
+    setError("");
 
-  setLoading(true);
+    const reader = new FileReader();
+    reader.onload = () => setImageData(reader.result);
+    reader.readAsDataURL(file);
+  };
 
-  setTimeout(() => {
-  const randomDisease =
-    diseaseData[Math.floor(Math.random() * diseaseData.length)];
+  const handleDetectDisease = async () => {
+    if (!imageData) {
+      setError("Please upload a crop image first.");
+      return;
+    }
 
-  setDisease(randomDisease.disease);
-  setConfidence(randomDisease.confidence);
-  setMedicine(randomDisease.medicine);
-  setRecommendation(randomDisease.recommendation);
+    setLoading(true);
+    setError("");
 
-  setLoading(false);
-}, 2000);
-};
+    try {
+      const response = await fetch("http://localhost:5000/api/disease", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageData }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Unable to analyze image.");
+      setResult(data);
+    } catch (requestError) {
+      setError(requestError.message || "Unable to analyze image.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
+      <main className="disease-page">
+        <h1>AI Disease Detection</h1>
+        <p>Upload a clear crop image for local Ollama vision analysis.</p>
 
-      <div className="disease-page">
-        <h1>🌿 AI Disease Detection</h1>
+        <section className="upload-box">
+          <label className="file-label" htmlFor="crop-image">Choose crop image</label>
+          <input id="crop-image" type="file" accept="image/*" onChange={handleImageChange} />
+          <button type="button" onClick={handleDetectDisease} disabled={loading || !imageData}>
+            {loading ? "Analyzing image..." : "Detect disease"}
+          </button>
+          {error && <p className="disease-error">{error}</p>}
+        </section>
 
-        <p>
-          Upload a crop image to detect diseases using Artificial Intelligence.
-        </p>
+        {image && (
+          <section className="preview-box">
+            <h2>Image Preview</h2>
+            <img src={image} alt="Uploaded crop" className="preview-image" />
+          </section>
+        )}
 
-        <div className="upload-box">
-          <input
-  type="file"
-  accept="image/*"
-  onChange={handleImageChange}
-/>
-
-          <button onClick={handleDetectDisease} disabled={loading}>
-  {loading ? "🔍 Analyzing Image..." : "Detect Disease"}
-</button>
-        </div>
-{image && (
-  <div className="preview-box">
-    <h2>Image Preview</h2>
-
-    <img
-  src={image}
-  alt="Crop Preview"
-  className="preview-image"
-/>
-  </div>
-)}
-       <div className="result-box">
-  <h2>🌿 Detection Result</h2>
-
-  <div className="result-item">
-    <span>🦠 Disease</span>
-    <strong>{disease}</strong>
-  </div>
-
-  <div className="result-item">
-    <span>📊 Confidence</span>
-    <strong>{confidence}</strong>
-  </div>
-
-  <div className="result-item">
-    <span>💊 Medicine</span>
-    <strong>{medicine}</strong>
-  </div>
-
-  <div className="result-item">
-    <span>✅ Recommendation</span>
-    <strong>{recommendation}</strong>
-  </div>
-</div>
-</div>
-</>
+        {result && (
+          <section className="result-box">
+            <h2>Detection Result</h2>
+            <div className="result-item"><span>Disease</span><strong>{result.disease}</strong></div>
+            <div className="result-item"><span>Confidence</span><strong>{result.confidence}</strong></div>
+            <div className="result-item"><span>Suggested treatment</span><strong>{result.medicine}</strong></div>
+            <div className="result-item"><span>Recommendation</span><strong>{result.recommendation}</strong></div>
+            <p className="disease-note">
+              {result.isCropImage
+                ? "AI results are informational. Confirm diagnosis and treatment with a local agriculture expert."
+                : "This image was rejected because it does not clearly show a crop or plant leaf."}
+            </p>
+          </section>
+        )}
+      </main>
+    </>
   );
 }
 

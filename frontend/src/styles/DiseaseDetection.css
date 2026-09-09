@@ -1,6 +1,8 @@
 .disease-page {
   min-height: 100vh;
   padding: 180px 60px 60px;
+  background: linear-gradient(135deg, #eefcf3, #e8f4ff);
+  text-align: center;
 }
 
 .disease-page h1 {
@@ -26,8 +28,16 @@
 }
 
 .upload-box input {
+  display: block;
+  width: 100%;
   margin: 20px 0;
   font-size: 16px;
+}
+
+.file-label {
+  display: block;
+  color: #166534;
+  font-weight: 700;
 }
 
 .upload-box button {
@@ -111,4 +121,29 @@
 .result-item strong{
     color:#333;
     text-align:right;
+}
+
+.disease-error {
+  color: #b91c1c !important;
+  margin: 16px 0 0 !important;
+  font-size: 15px !important;
+}
+
+.disease-note {
+  border-top: 1px solid #d1fae5;
+  padding-top: 16px;
+  margin-bottom: 0 !important;
+  font-size: 14px !important;
+}
+
+@media (max-width: 700px) {
+  .disease-page {
+    padding: 130px 20px 40px;
+  }
+
+  .upload-box,
+  .preview-box,
+  .result-box {
+    width: auto;
+  }
 }
