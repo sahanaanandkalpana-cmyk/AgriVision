@@ -44,7 +44,14 @@ function App() {
       />
       <Route path="/smart-irrigation" element={<SmartIrrigation />} />
       <Route path="/crop-recommendation" element={<CropRecommendation />} />
-      <Route path="/drone-monitoring" element={<DroneMonitoring />} />
+      <Route
+        path="/drone-monitoring"
+        element={
+          <ProtectedRoute>
+            <DroneMonitoring />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/profit-estimation" element={<ProfitEstimation />} />
       <Route
         path="/ai-assistant"

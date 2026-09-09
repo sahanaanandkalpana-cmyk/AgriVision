@@ -1,98 +1,160 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import "../styles/DroneMonitoring.css";
 
+const zones = [
+  { name: "Zone A", health: 92, status: "Monitored", alert: "Low", tone: "good" },
+  { name: "Zone B", health: 74, status: "Water Stress", alert: "Medium", tone: "medium" },
+  { name: "Zone C", health: 68, status: "Disease Alert", alert: "High", tone: "high" },
+  { name: "Zone D", health: 89, status: "Healthy", alert: "None", tone: "good" },
+];
+
+const alerts = [
+  { severity: "Medium", zone: "Zone B", description: "Water stress detected", time: "2 min ago", tone: "medium" },
+  { severity: "High", zone: "Zone C", description: "Possible crop disease detected", time: "5 min ago", tone: "high" },
+  { severity: "Low", zone: "Zone A", description: "Monitoring completed", time: "9 min ago", tone: "good" },
+];
+
+function ProgressBar({ value, tone = "green" }) {
+  return (
+    <div className="progress-track" aria-label={`${value}%`}>
+      <span className={`progress-fill ${tone}`} style={{ width: `${value}%` }} />
+    </div>
+  );
+}
+
 function DroneMonitoring() {
+  const [missionState, setMissionState] = useState("idle");
+  const [progress, setProgress] = useState(68);
+  const [battery, setBattery] = useState(82);
+  const [flightTime, setFlightTime] = useState(18);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const scanData = [
-    {
-      battery: "82%",
-      gps: "Connected",
-      area: "68%",
-      alerts: "4 Detected",
-      status: "🟢 Flying"
-    },
-    {
-      battery: "76%",
-      gps: "Connected",
-      area: "74%",
-      alerts: "2 Detected",
-      status: "🟢 Flying"
-    },
-    {
-      battery: "69%",
-      gps: "Connected",
-      area: "85%",
-      alerts: "1 Detected",
-      status: "🟡 Returning"
-    },
-    {
-      battery: "95%",
-      gps: "Connected",
-      area: "40%",
-      alerts: "No Disease",
-      status: "🟢 Flying"
+  useEffect(() => {
+    if (missionState !== "running") return undefined;
+
+    const interval = window.setInterval(() => {
+      setProgress((currentProgress) => {
+        const nextProgress = Math.min(currentProgress + 2, 100);
+        if (nextProgress >= 100) setMissionState("complete");
+        return nextProgress;
+      });
+      setBattery((currentBattery) => Math.max(currentBattery - 1, 15));
+      setFlightTime((currentTime) => currentTime + 1);
+      setLastUpdated(new Date());
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [missionState]);
+
+  useEffect(() => {
+    if (missionState !== "returning") return undefined;
+
+    const timeout = window.setTimeout(() => {
+      setMissionState("base");
+      setLastUpdated(new Date());
+    }, 1400);
+
+    return () => window.clearTimeout(timeout);
+  }, [missionState]);
+
+  const startMission = () => {
+    if (missionState === "base" || missionState === "complete") {
+      setProgress(0);
+      setBattery(82);
+      setFlightTime(18);
     }
-  ];
-
-  const [data, setData] = useState(scanData[0]);
-
-  const startScan = () => {
-    const random =
-      scanData[Math.floor(Math.random() * scanData.length)];
-
-    setData(random);
+    setMissionState("running");
+    setLastUpdated(new Date());
   };
+
+  const pauseMission = () => {
+    setMissionState("paused");
+    setLastUpdated(new Date());
+  };
+
+  const returnToBase = () => {
+    setMissionState("returning");
+    setLastUpdated(new Date());
+  };
+
+  const areaScanned = (5 * progress) / 100;
+  const areaRemaining = 5 - areaScanned;
+  const statusLabel = {
+    idle: "Active / Monitoring",
+    running: "Monitoring",
+    paused: "Mission Paused",
+    returning: "Returning to Base",
+    base: "Drone at Base",
+    complete: "Survey Complete",
+  }[missionState];
+
+  const canStart = ["idle", "paused", "base", "complete"].includes(missionState);
+  const canPause = missionState === "running";
+  const canReturn = ["running", "paused", "complete"].includes(missionState);
 
   return (
     <>
       <Navbar />
 
-      <div className="drone-page">
-
-        <h1>🚁 Drone Monitoring</h1>
-
-        <p>
-          Monitor crop fields using intelligent drone surveillance.
-        </p>
-
-        <div className="drone-grid">
-
-          <div className="drone-card">
-            <h2>🔋 Battery</h2>
-            <h3>{data.battery}</h3>
+      <main className="drone-page">
+        <header className="drone-header">
+          <div>
+            <span className="eyebrow">FIELD OPERATIONS / LIVE SIMULATION</span>
+            <h1>Drone Monitoring</h1>
+            <p>Simulate an aerial crop health survey across Green Valley Farm.</p>
           </div>
+          <span className={`mission-badge ${missionState}`}><span className="status-dot" /> {statusLabel}</span>
+        </header>
 
-          <div className="drone-card">
-            <h2>📍 GPS Status</h2>
-            <h3>{data.gps}</h3>
+        <section className="status-layout">
+          <article className="panel status-panel">
+            <div className="panel-heading"><div><span className="panel-kicker">AIRCRAFT STATUS</span><h2>AgriVision Drone 01</h2></div><span className="signal-status"><span className="signal-bars">▮▮▮</span> Strong</span></div>
+            <div className="status-grid">
+              <div className="status-value"><span>Status</span><strong>{statusLabel}</strong></div>
+              <div className="status-value"><span>Current Mission</span><strong>Crop Health Survey</strong></div>
+              <div className="status-value"><span>Monitoring Area</span><strong>Green Valley Farm</strong></div>
+              <div className="status-value"><span>Flight Time</span><strong>{flightTime} min</strong></div>
+            </div>
+            <div className="meter-row"><div><span>Battery</span><strong>{battery}%</strong></div><ProgressBar value={battery} /></div>
+            <div className="meter-row"><div><span>Signal</span><strong>Strong</strong></div><ProgressBar value={94} tone="blue" /></div>
+            <p className="updated-time">Last updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p>
+          </article>
+
+          <article className="panel mission-panel">
+            <div className="panel-heading"><div><span className="panel-kicker">MISSION CONTROL</span><h2>Crop Health Survey</h2></div><span className="simulation-tag">DEMO MODE</span></div>
+            <div className="control-row">
+              <button type="button" className="control-button primary" onClick={startMission} disabled={!canStart}>🚀 Start Mission</button>
+              <button type="button" className="control-button secondary" onClick={pauseMission} disabled={!canPause}>⏸ Pause Mission</button>
+              <button type="button" className="control-button outline" onClick={returnToBase} disabled={!canReturn}>🏠 Return to Base</button>
+            </div>
+            <div className="mission-progress"><div><span>Monitoring progress</span><strong>{progress}%</strong></div><ProgressBar value={progress} tone="blue" /></div>
+          </article>
+        </section>
+
+        <section className="field-layout">
+          <article className="panel field-panel">
+            <div className="panel-heading"><div><span className="panel-kicker">FIELD SCAN</span><h2>Green Valley Farm</h2></div><span className="area-label">5 acres</span></div>
+            <div className="field-map" aria-label="Simulated farm field map">
+              <div className="field-boundary">
+                <div className="crop-zone zone-a">A<span>92% healthy</span></div><div className="crop-zone zone-b">B<span>74% healthy</span></div><div className="crop-zone zone-c">C<span>68% healthy</span></div><div className="crop-zone zone-d">D<span>89% healthy</span></div>
+                <div className="scanned-overlay" style={{ width: `${progress}%` }} /><div className="drone-marker" style={{ left: `${Math.max(8, Math.min(progress, 92))}%` }}><span>✦</span></div>
+              </div>
+              <div className="map-legend"><span><i className="legend-swatch scanned" /> Scanned area</span><span><i className="legend-swatch remaining" /> Remaining area</span><span><i className="legend-swatch drone" /> Drone</span></div>
+            </div>
+          </article>
+          <div className="stats-grid">
+            <article className="stat-card"><span>Area Scanned</span><strong>{areaScanned.toFixed(1)} <small>acres</small></strong><ProgressBar value={progress} /></article><article className="stat-card"><span>Area Remaining</span><strong>{areaRemaining.toFixed(1)} <small>acres</small></strong><ProgressBar value={100 - progress} tone="amber" /></article><article className="stat-card"><span>Crop Health</span><strong>82<small>%</small></strong><ProgressBar value={82} /></article><article className="stat-card"><span>Alerts Detected</span><strong>3</strong><em>Needs review</em></article>
           </div>
+        </section>
 
-          <div className="drone-card">
-            <h2>🌿 Area Covered</h2>
-            <h3>{data.area}</h3>
-          </div>
+        <section className="lower-grid">
+          <article className="panel health-panel"><div className="panel-heading"><div><span className="panel-kicker">CROP HEALTH</span><h2>Field condition</h2></div><span className="health-score">82% healthy</span></div><div className="health-summary"><div className="health-ring"><strong>82%</strong><span>Healthy</span></div><div className="health-bars"><div><div><span>Healthy Area</span><strong>82%</strong></div><ProgressBar value={82} /></div><div><div><span>Affected Area</span><strong>18%</strong></div><ProgressBar value={18} tone="red" /></div></div></div><div className="health-categories"><div><span>🌱</span><b>Healthy Crops</b><strong>82%</strong></div><div><span>💧</span><b>Water Stress</b><strong>9%</strong></div><div><span>🦠</span><b>Possible Disease</b><strong>6%</strong></div><div><span>🐛</span><b>Possible Pest Activity</b><strong>3%</strong></div></div></article>
+          <article className="panel alerts-panel"><div className="panel-heading"><div><span className="panel-kicker">ATTENTION QUEUE</span><h2>Drone alerts</h2></div><span className="alert-count">3 active</span></div><div className="alerts-list">{alerts.map((alert) => <div className="alert-row" key={`${alert.zone}-${alert.severity}`}><span className={`alert-icon ${alert.tone}`}>!</span><div><div className="alert-title"><strong>{alert.description}</strong><span className={`severity ${alert.tone}`}>{alert.severity}</span></div><p>{alert.zone} · {alert.time}</p></div></div>)}</div></article>
+        </section>
 
-          <div className="drone-card">
-            <h2>⚠ Disease Alerts</h2>
-            <h3>{data.alerts}</h3>
-          </div>
-
-        </div>
-
-        <div className="drone-result">
-
-          <h2>Drone Status</h2>
-
-          <h1>{data.status}</h1>
-
-          <button onClick={startScan}>
-            🚁 Start Scan
-          </button>
-
-        </div>
-
-      </div>
+        <section className="panel zones-panel"><div className="panel-heading"><div><span className="panel-kicker">FIELD BREAKDOWN</span><h2>Monitoring zones</h2></div></div><div className="zone-grid">{zones.map((zone) => <div className="zone-card" key={zone.name}><div className="zone-top"><strong>{zone.name}</strong><span className={`zone-status ${zone.tone}`}>{zone.alert === "None" ? "Healthy" : zone.alert}</span></div><div className="zone-health"><strong>{zone.health}%</strong><span>Crop health</span></div><ProgressBar value={zone.health} tone={zone.tone === "high" ? "red" : zone.tone === "medium" ? "amber" : "green"} /><span className="zone-monitor">{zone.status}</span></div>)}</div></section>
+      </main>
     </>
   );
 }
