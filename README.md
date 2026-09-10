@@ -1,7 +1,7 @@
 # 🌱 AgriVision
 
 ### 🚀 Live Demo
-👉 [Visit AgriVision](https://agrivisionaipoweredagriculture.netlify.app/)
+👉 [Visit AgriVision](https://agrivisionaipoweredagriculturalsite.netlify.app/)
 
 AgriVision is a smart agriculture platform with a React frontend and a Node.js/Express backend. It brings farm management, weather information, crop health, soil moisture, irrigation, drone monitoring, and related agriculture tools into one application.
 
