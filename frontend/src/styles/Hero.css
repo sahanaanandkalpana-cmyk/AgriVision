@@ -1,0 +1,437 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 120px 20px;
+
+  background:
+    radial-gradient(circle at 20% 20%, rgba(134,239,172,0.35), transparent 35%),
+    radial-gradient(circle at 80% 25%, rgba(74,222,128,0.25), transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(187,247,208,0.35), transparent 40%),
+    linear-gradient(135deg,#edfdf1,#f8fff8,#e6fff0);
+}
+
+/* Glow Background */
+
+.hero::before{
+
+content:'';
+
+position:absolute;
+
+width:500px;
+height:500px;
+
+background:#5eff79;
+
+border-radius:50%;
+
+filter:blur(170px);
+
+left:-120px;
+
+top:-120px;
+
+animation:move1 8s infinite ease-in-out;
+}
+
+.hero::after{
+
+content:'';
+
+position:absolute;
+
+width:500px;
+height:500px;
+
+background:#6fe9ff;
+
+border-radius:50%;
+
+filter:blur(180px);
+
+right:-120px;
+
+bottom:-120px;
+
+animation:move2 8s infinite ease-in-out;
+}
+
+/* Floating Shapes */
+
+.shape{
+
+position:absolute;
+
+border-radius:50%;
+
+animation:float 7s infinite ease-in-out;
+
+backdrop-filter:blur(20px);
+}
+
+.shape1{
+
+width:90px;
+height:90px;
+
+background:rgba(255,255,255,.45);
+
+left:8%;
+
+top:18%;
+}
+
+.shape2{
+
+width:65px;
+height:65px;
+
+background:#98ffab;
+
+right:12%;
+
+top:28%;
+}
+
+.shape3{
+
+width:120px;
+height:120px;
+
+background:rgba(255,255,255,.35);
+
+right:15%;
+
+bottom:12%;
+}
+
+.shape4{
+
+width:70px;
+height:70px;
+
+background:#84f4ff;
+
+left:12%;
+
+bottom:15%;
+}
+
+/* Hero Card */
+
+.hero-card {
+  position: relative;
+  z-index: 2;
+
+  width: min(900px, 92%);
+  padding: 70px 60px;
+  border-radius: 35px;
+
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,0.5);
+
+  text-align: center;
+
+  box-shadow:
+      0 20px 60px rgba(0,0,0,0.08),
+      0 0 40px rgba(34,197,94,0.15);
+animation: fadeUp 1s ease;
+  overflow: hidden;
+}
+.hero-card::before {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+
+  background: rgba(255,255,255,0.25);
+
+  border-radius: 50%;
+
+  top: -120px;
+  right: -100px;
+
+  filter: blur(30px);
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+
+  background: rgba(34,197,94,0.18);
+
+  border-radius: 50%;
+
+  bottom: -70px;
+  left: -60px;
+
+  filter: blur(35px);
+}
+
+.hero-logo{
+
+font-size:80px;
+}
+
+.hero-card h1{
+    font-size:70px;
+    color:#146c2e;
+    animation:floatLogo 4s ease-in-out infinite;
+}
+
+.hero-card h2{
+
+font-size:52px;
+
+margin-top:10px;
+
+color:#2ca33d;
+}
+
+.hero-card p{
+
+width:75%;
+
+margin:auto;
+
+margin-top:25px;
+
+font-size:28px;
+
+line-height:1.8;
+
+color:#555;
+}
+
+.hero-buttons{
+
+display:flex;
+
+justify-content:center;
+
+gap:30px;
+
+margin-top:55px;
+}
+
+.primary-btn{
+
+background:linear-gradient(135deg,#22c55e,#16a34a);
+
+color:white;
+
+padding:18px 38px;
+
+border:none;
+
+border-radius:50px;
+
+font-size:20px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.4s;
+
+box-shadow:0 12px 25px rgba(34,197,94,.35);
+
+}
+.primary-btn:hover{
+
+transform:translateY(-6px) scale(1.05);
+
+box-shadow:0 20px 35px rgba(34,197,94,.45);
+
+}
+.primary-btn:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 20px 40px rgba(0,150,0,.3);
+}
+
+.secondary-btn{
+
+padding:20px 45px;
+
+background:white;
+
+border:none;
+
+border-radius:50px;
+
+font-size:22px;
+
+font-weight:600;
+
+color:#178438;
+
+cursor:pointer;
+
+transition:.3s;
+}
+
+.secondary-btn:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 20px 40px rgba(0,0,0,.12);
+}
+
+@keyframes float{
+
+0%{
+
+transform:translateY(0);
+}
+
+50%{
+
+transform:translateY(-20px);
+}
+
+100%{
+
+transform:translateY(0);
+}
+
+}
+
+@keyframes move1{
+
+0%{
+
+transform:translateY(0);
+}
+
+50%{
+
+transform:translateY(50px);
+}
+
+100%{
+
+transform:translateY(0);
+}
+
+}
+
+@keyframes move2{
+
+0%{
+
+transform:translateY(0);
+}
+
+50%{
+
+transform:translateY(-50px);
+}
+
+100%{
+
+transform:translateY(0);
+}
+
+}
+/* ============================= */
+/* Animated Background Circles   */
+/* ============================= */
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+  z-index: 0;
+}
+
+.circle1 {
+  width: 300px;
+  height: 300px;
+  background: rgba(34, 197, 94, 0.35);
+  top: -80px;
+  left: -80px;
+}
+
+.circle2 {
+  width: 260px;
+  height: 260px;
+  background: rgba(74, 222, 128, 0.28);
+  bottom: 60px;
+  right: -70px;
+  animation-delay: 2s;
+}
+
+.circle3 {
+  width: 220px;
+  height: 220px;
+  background: rgba(163, 230, 53, 0.25);
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+
+  50% {
+    transform: translateY(-35px) scale(1.12);
+  }
+
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+}
+@keyframes fadeUp {
+
+  from{
+    opacity:0;
+    transform:translateY(60px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+@keyframes floatLogo{
+
+0%{
+transform:translateY(0px);
+}
+
+50%{
+transform:translateY(-8px);
+}
+
+100%{
+transform:translateY(0px);
+}
+
+}
