@@ -67,7 +67,14 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/crop-health" element={<CropHealth />} />
-      <Route path="/soil-moisture" element={<SoilMoisture />} />
+      <Route
+        path="/soil-moisture"
+        element={
+          <ProtectedRoute>
+            <SoilMoisture />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/drone" element={<Drone />} />
       <Route path="/register" element={<Register />} />
       <Route path="/farm-management" element={<FarmManagement />} />

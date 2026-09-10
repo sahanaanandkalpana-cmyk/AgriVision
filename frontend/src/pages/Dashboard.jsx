@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar";
 function Dashboard() {
   const [farmerName, setFarmerName] = useState("");
   const [farms, setFarms] = useState([]);
+  const navigate = useNavigate();
 
 useEffect(() => {
   const farmer = JSON.parse(localStorage.getItem("farmer"));
@@ -29,7 +30,16 @@ useEffect(() => {
 
       const data = await response.json();
 
-      setFarms(data.farms);
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login", { replace: true });
+          return;
+        }
+        throw new Error(data.message || "Unable to load farms");
+      }
+
+      setFarms(Array.isArray(data.farms) ? data.farms : []);
       console.log("My farms:", data.farms);
     } catch (error) {
       console.error("Error fetching farms:", error);
@@ -37,8 +47,7 @@ useEffect(() => {
   };
 
   fetchFarms();
-}, []);
-const navigate = useNavigate();
+}, [navigate]);
 const handleLogout = () => {
   localStorage.clear();
   navigate("/login");
@@ -60,9 +69,7 @@ if (hour < 12) {
 
       <div className="dashboard">
 
-       <div className="dashboard-header">
-
-  <div className="dashboard-header">
+        <div className="dashboard-header">
 
   <div>
     <h1>🌱 AgriVision Dashboard</h1>
@@ -77,8 +84,6 @@ if (hour < 12) {
   >
     🚪 Logout
   </button>
-
-</div>
 
 </div>
 
@@ -113,7 +118,15 @@ if (hour < 12) {
 </div>
 
 <div className="my-farms">
-  <h2>🌾 My Farms</h2>
+  <div className="my-farms-header">
+    <h2>🌾 My Farms</h2>
+    <button
+      className="add-farm-btn"
+      onClick={() => navigate("/farm-management")}
+    >
+      Add
+    </button>
+  </div>
 
   {farms.map((farm) => (
     <div className="farm-item" key={farm._id}>
@@ -150,7 +163,7 @@ if (hour < 12) {
   </div>
 </Link>
 
-         <Link to="/drone" className="card-link">
+         <Link to="/drone-monitoring" className="card-link">
   <div className="card">
     <h2>🚁 Drone</h2>
     <p>Flying</p>
